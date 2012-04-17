@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Document   : selenium.xml
+  Created on : April 16, 2012, 21:07 PM
+  Author     : Martin Malek
+  Description:
+    This file is for handling the selenium server.
+    To pass the parameters, call:
+      ant -f selenium.xml -Dport=4445 -Ddisplay=:2
+-->
+<project name="selenium" default="restart" basedir=".">
+
+	<property name="port" value="4444" />
+	<property name="display" value=":0" />
+	<property name="path" value="/var/opt/selenium/selenium-server.jar" />
+
+	<target name="start">
+		<java jar="${path}" fork="true" spawn="true">
+			<env key="DISPLAY" value="${display}"/>
+			<arg line="-timeout 30 -port ${port}"/>
+		</java>
+	</target>
+
+	<target name="stop">
+		<get taskname="selenium-shutdown"
+			src="http://localhost:${port}/selenium-server/driver/?cmd=shutDownSeleniumServer"
+			dest="result.txt" ignoreerrors="true" />
+		<echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
+	</target>
+
+	<target name="restart" depends="stop,start" description="Restart the selenium server" />
+
+</project>
